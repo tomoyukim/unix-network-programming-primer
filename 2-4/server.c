@@ -41,8 +41,12 @@ main() {
 
   do {
     int n;
+
+    write(1, ">>Please input message:\n", 24);
     n = read(0, buf, BUF_LEN);
     write(soc, buf, n);
+
+    write(1, "<<Wait message..\n", 18);
     n = read(soc, buf, BUF_LEN);
     write(1, buf, n);
   } while (strncmp(buf, "quit", 4) != 0);

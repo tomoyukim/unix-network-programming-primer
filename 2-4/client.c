@@ -19,6 +19,12 @@ main() {
     exit(1);
   }
 
+  printf("h_name: %s\n", server_ent->h_name);
+  printf("h_aliases[0]: %s\n", server_ent->h_aliases[0]);
+  printf("h_addrtype:%d\n", server_ent->h_addrtype);
+  printf("h_length:%d\n", server_ent->h_length);
+  printf("h_addr:%s\n", server_ent->h_addr_list[0]);
+
   memset((char *)&server, 0, sizeof(server));
   server.sin_family = AF_INET;
   server.sin_port = htons(PORT);
@@ -39,8 +45,11 @@ main() {
   do {
     int n;
 
+    write(1, "<<Wait message..\n", 18);
     n = read(soc, buf, BUF_LEN);
     write(1, buf, n);
+
+    write(1, ">>Please input message:\n", 24);
     n = read(0, buf, BUF_LEN);
     write(soc, buf, n);
   } while (strncmp(buf, "quit", 4) != 0);
