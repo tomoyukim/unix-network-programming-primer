@@ -18,11 +18,16 @@ void goban_init(int soc, char my_stone, char peer_stone) {
   goban_soc = soc;
   goban_my_stone = my_stone;
   goban_peer_stone = peer_stone;
+
+  // init goban screen
+  printf("\033[1;1H");
+  printf("\033[0J");
 }
 
 void goban_show() {
   int i;
   for (i = 0; i < 5; i++) {
+    printf("\033[%02d;20H", i + 5);
     printf("%s\n", goban_plane[i]);
   }
 }
@@ -56,6 +61,9 @@ int goban_my_turn() {
       return -1;
     }
     if (data[0] < 'a' || data[0] > 'c' || data[1] < '1' || data[1] > '3') {
+      // clear input text
+      printf("\033[1A");
+      printf("\033[K");
       continue;
     }
     break;

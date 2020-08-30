@@ -18,12 +18,14 @@ main() {
 
   while(1) {
     goban_show();
+    printf("\033[0J");
     printf("Go ahead.\n");
     if (goban_my_turn() == -1) {
       break;
     }
 
     goban_show();
+    printf("\033[0J");
     printf("Wait.\n");
     if (goban_peer_turn() == -1) {
       break;
