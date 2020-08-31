@@ -4,9 +4,9 @@
 
 #define BUF_LEN 20
 #define MIN_X   1
-#define MIN_Y   1
+#define MIN_Y   2  // +1 life display space
 #define MAX_X   60
-#define MAX_Y   20
+#define MAX_Y   21 // +1 life display space
 
 #define NORTH  'k'
 #define SOUTH  'j'
@@ -22,6 +22,8 @@ static char my_char, peer_char;
 typedef struct {
   int x, y;
   char look;
+  int life;
+  int ldx, ldy; // life display pos
 } PLAYER;
 
 static PLAYER me, peer;
@@ -36,6 +38,8 @@ static int update(PLAYER *who, int c);
 static int interpret(PLAYER *who);
 static void die();
 
+static void show_life(PLAYER *who);
+
 // TODO: error handling and return
 void session_init(int soc, char mc, int mx, int my, char pc, int px, int py) {
   session_soc = soc;
@@ -48,8 +52,14 @@ void session_init(int soc, char mc, int mx, int my, char pc, int px, int py) {
 
   me.x = mx;
   me.y = my;
+  me.life = 100;
+  me.ldx = 1;
+  me.ldy = 1;
   peer.x = px;
   peer.y = py;
+  peer.life = 100;
+  peer.ldx = 1;
+  peer.ldy = 10;
 
   initscr();
   signal(SIGINT, die);
@@ -99,6 +109,7 @@ void session_loop() {
 }
 
 static void show(PLAYER *who) {
+  show_life(who);
   wmove(win, who->y, who->x);
   waddch(win, who->look);
   wmove(win, who->y, who->x);
@@ -115,28 +126,47 @@ static int update(PLAYER *who, int c) {
     case WEST:
       if (who->x > MIN_X) {
         who->x--;
+        who->life--;
+      } else {
+        who->life -= 10;
       }
       break;
     case SOUTH:
       if (who->y < MAX_Y) {
         who->y++;
+        who->life--;
+      } else {
+        who->life -= 10;
       }
       break;
     case NORTH:
       if (who->y > MIN_Y) {
         who->y--;
+        who->life--;
+      } else {
+        who->life -= 10;
       }
       break;
     case EAST:
       if (who->x < MAX_X) {
         who->x++;
+        who->life--;
+      } else {
+        who->life -= 10;
       }
       break;
     case QUIT:
       buf[0] = QUIT;
       return 0;
   }
-  sprintf(buf, "%d %d\n", who->x, who->y);
+
+  if (who->life < 1) {
+    // game end
+    buf[0] = QUIT;
+    return 0;
+  }
+
+  sprintf(buf, "%d %d %d\n", who->x, who->y, who->life);
   return 1;
 }
 
@@ -144,11 +174,20 @@ static int interpret(PLAYER *who) {
   if (buf[0] == 'q') {
     return 0;
   }
-  sscanf(buf, "%d %d", &who->x, &who->y);
+  sscanf(buf, "%d %d %d", &who->x, &who->y, &who->life);
   return 1;
 }
 
 static void die() {
   endwin();
   exit(0);
+}
+
+static void show_life(PLAYER *who) {
+  char label[6];
+  snprintf(label, 6, "%c:%03d", who->look, who->life);
+
+  wmove(win, who->ldx, who->ldy);
+  waddstr(win, label);
+  wmove(win, who->ldx, who->ldy);
 }

@@ -13,7 +13,7 @@ main() {
     exit(1);
   }
 
-  session_init(soc, 'x', 10, 10, 'o', 1, 1);
+  session_init(soc, 'x', 10, 10, 'o', 1, 2);
 
   session_loop();
 }

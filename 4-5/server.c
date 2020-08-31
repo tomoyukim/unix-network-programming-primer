@@ -8,7 +8,7 @@ main() {
     exit(1);
   }
 
-  session_init(soc, 'o', 1, 1, 'x', 10, 10);
+  session_init(soc, 'o', 1, 2, 'x', 10, 10);
 
   session_loop();
 }
