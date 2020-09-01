@@ -1,4 +1,4 @@
-OBJS=setup_client.o setup_server.o chop_newline.o #setup_mserver.o
+OBJS=setup_client.o setup_server.o chop_newline.o setup_mserver.o
 AR=ar -qc
 
 mylib.a: $(OBJS)
@@ -9,4 +9,4 @@ $(OBJS): mylib.h
 
 .PHONY: clean
 clean:
-	$(RM) *.o mylib.ar
+	$(RM) *.o mylib.a
